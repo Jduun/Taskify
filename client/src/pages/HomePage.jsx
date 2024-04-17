@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Board from "./Board";
-import Topbar from "./Topbar";
-import Sidebar from "./Sidebar";
+import Board from "../components/Board";
+import Topbar from "../components/Topbar";
+import Sidebar from "../components/Sidebar";
 
-const KanbanBoard = () => {
+const HomePage = () => {
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
     const [activeBoard, setActiveBoard] = useState({ "id": 1, "name": "Board 1" })
     const [boardList, setBoardList] = useState([
@@ -39,4 +39,4 @@ const KanbanBoard = () => {
     )
 }
 
-export default KanbanBoard
+export default HomePage

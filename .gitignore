@@ -1,4 +1,4 @@
-# client part
+# client side
 
 # dependencies
 client/node_modules
@@ -23,5 +23,5 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 
-# server part
+# server side
 server/venv

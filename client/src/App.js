@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import KanbanBoard from './components/KanbanBoard';
+import HomePage from './pages/HomePage';
+import AuthPage from "./pages/AuthPage";
 
 function App() {
   const [data, setData] = useState([{}])
   /*
-  useEffect(() => {
+  useEffect(() => {••••••••••••
     fetch("/members").then(
       res => res.json()
     ).then(
@@ -18,7 +19,7 @@ function App() {
 */
   return (
     <div className="App">
-      <KanbanBoard />
+      <AuthPage />
       {/*(typeof data.members === "undefined") ? (
         <p>Loading...</p>
       ): (
