@@ -25,3 +25,5 @@ client/yarn-error.log*
 
 # server side
 server/venv
+
+.idea
