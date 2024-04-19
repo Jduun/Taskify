@@ -1,4 +1,4 @@
-import { Field, ErrorMessage as Error, Formik, Form } from "formik";
+import { Field, ErrorMessage as Error } from "formik";
 import React from "react";
 
 const Input = ({ id, label, name, type }) => {

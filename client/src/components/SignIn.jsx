@@ -5,6 +5,7 @@ import * as yup from 'yup';
 
 const initialValues = {
     email: "",
+    nickname: "",
     password: ""
 }
 
@@ -12,6 +13,8 @@ const schema = yup.object().shape({
     email: yup.string()
         .email('Enter the correct email')
         .required('Email is required'),
+    nickname: yup.string()
+        .required('Nickname is required'),
     password: yup.string()
         .required('Password is required')
         .min(8, 'The password must be at least 8 characters long')
@@ -19,20 +22,29 @@ const schema = yup.object().shape({
         .matches(/(?=.*[A-Z|А-Я])/, 'The password must contain at least one capital letter'),
 })
 
-const SignIn = ({ toggleForm }) => {
+const SignIn = ({ toggleForm, sendCredentials }) => {
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={schema}
-            onSubmit={() => console.log("Success")} // send data to server
+            onSubmit={(values) => {
+                sendCredentials("/api/signin", values)
+            }}
         >
-            <Form className="w-full p-5 rounded-md bg-white max-w-96">
+            <Form
+                className="w-full p-5 rounded-md bg-white max-w-96">
                 <strong>Welcome back to Taskify</strong>
                 <Input
                     label="Email"
                     name="email"
                     type="email"
                     id="email"
+                />
+                <Input
+                    label="Nickname"
+                    name="nickname"
+                    type="text"
+                    id="nickname"
                 />
                 <Input
                     label="Password"

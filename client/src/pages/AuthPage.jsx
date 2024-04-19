@@ -1,19 +1,49 @@
-import { Field, ErrorMessage as Error, Formik, Form } from "formik";
 import React, { useState } from "react";
 import SignIn from "../components/SignIn";
 import SignUp from "../components/SignUp";
+import axios from 'axios'
+
 
 const AuthPage = ({ id, label, name, placeholder, type }) => {
     const [isSignIn, setIsSignIn] = useState(true)
+    //const [credentials, setCredentials] = useState(null)
 
-    console.log(isSignIn)
     const toggleForm = () => {
         setIsSignIn(!isSignIn)
+      //  setCredentials(null)
     }
 
+    const sendCredentials = (route, values) => {
+        axios.post(route, values)
+            .then(response => {
+                // Обработка успешного ответа
+                console.log(values)
+                console.log('Вход выполнен успешно');
+            })
+            .catch(error => {
+                // Обработка ошибки
+                console.log(values)
+                console.log('Ошибка входа:', error);
+            });
+    }
+
+    //console.log(credentials)
+
     return (
-        <div className="flex justify-center items-center h-screen">
-            {isSignIn ? <SignIn toggleForm={toggleForm} /> : <SignUp toggleForm={toggleForm} />}
+        <div
+            className="flex justify-center items-center h-screen">
+            {isSignIn ?
+                <SignIn
+                    toggleForm={toggleForm}
+                    sendCredentials={sendCredentials}
+                    //setCredentials={setCredentials}
+                /> :
+                <SignUp
+                    toggleForm={toggleForm}
+                    sendCredentials={sendCredentials}
+                    //setCredentials={setCredentials}
+                />
+            }
         </div>
     )
 }

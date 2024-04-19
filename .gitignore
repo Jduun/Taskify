@@ -24,6 +24,7 @@ client/yarn-error.log*
 
 
 # server side
-server/venv
+server/env_vars.env
+server/main
 
 .idea

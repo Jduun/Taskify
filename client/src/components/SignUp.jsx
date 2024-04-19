@@ -23,14 +23,17 @@ const schema = yup.object().shape({
         .oneOf([yup.ref('password'), null], 'Passwords must match')
 })
 
-const SignUp = ({ toggleForm} ) => {
+const SignUp = ({ toggleForm, sendCredentials } ) => {
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={schema}
-            onSubmit={() => console.log("Success")} // send data to server
+            onSubmit={(values) => {
+                sendCredentials("/api/signup", values)
+            }}
         >
-            <Form className="w-full p-5 rounded-md bg-white max-w-96">
+            <Form
+                className="w-full p-5 rounded-md bg-white max-w-96">
                 <strong>Welcome to Taskify</strong>
                 <Input
                     label="Email"
