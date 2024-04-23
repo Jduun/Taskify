@@ -19,7 +19,8 @@ function App() {
 */
   return (
     <div className="App">
-      <AuthPage />
+        <AuthPage />
+
       {/*(typeof data.members === "undefined") ? (
         <p>Loading...</p>
       ): (

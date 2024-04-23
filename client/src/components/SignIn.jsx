@@ -5,7 +5,6 @@ import * as yup from 'yup';
 
 const initialValues = {
     email: "",
-    nickname: "",
     password: ""
 }
 
@@ -13,8 +12,6 @@ const schema = yup.object().shape({
     email: yup.string()
         .email('Enter the correct email')
         .required('Email is required'),
-    nickname: yup.string()
-        .required('Nickname is required'),
     password: yup.string()
         .required('Password is required')
         .min(8, 'The password must be at least 8 characters long')
@@ -28,7 +25,7 @@ const SignIn = ({ toggleForm, sendCredentials }) => {
             initialValues={initialValues}
             validationSchema={schema}
             onSubmit={(values) => {
-                sendCredentials("/api/signin", values)
+                sendCredentials("/handlers/signin", values)
             }}
         >
             <Form
@@ -39,12 +36,6 @@ const SignIn = ({ toggleForm, sendCredentials }) => {
                     name="email"
                     type="email"
                     id="email"
-                />
-                <Input
-                    label="Nickname"
-                    name="nickname"
-                    type="text"
-                    id="nickname"
                 />
                 <Input
                     label="Password"
