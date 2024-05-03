@@ -2,21 +2,18 @@ import React from "react";
 import { Formik, Form } from "formik";
 import Input from "./Input";
 import * as yup from 'yup';
+import axios from "axios";
 
 const initialValues = {
-    email: "",
     username: "",
     password: "",
     confirmPassword: ""
 }
 
 const schema = yup.object().shape({
-    email: yup.string()
-        .email('Enter the correct email')
-        .required('Email is required'),
     username: yup.string()
         .required('Username is required')
-        .max(30, "The username must be less 30 characters long"),
+        .max(50, "The username must be less 50 characters long"),
     password: yup.string()
         .required('Password is required')
         .min(8, 'The password must be at least 8 characters long')
@@ -32,19 +29,23 @@ const SignUp = ({ toggleForm, sendCredentials } ) => {
         <Formik
             initialValues={initialValues}
             validationSchema={schema}
-            onSubmit={(values) => {
-                sendCredentials("/handlers/signup", values)
+            onSubmit={(values, { setFieldError }) => {
+                axios.post("/api/signup", values)
+                .then(response => {
+                    console.log('User has been successfully registered', response);
+                })
+                .catch(error => {
+                    if (error.response) {
+                        if (error.response.status === 409) {
+                            setFieldError('username', 'User with the same username already exists');
+                        }
+                    }
+                });
             }}
         >
             <Form
                 className="w-full p-5 rounded-md bg-white max-w-96">
                 <strong>Welcome to Taskify</strong>
-                <Input
-                    label="Email"
-                    name="email"
-                    type="email"
-                    id="email"
-                />
                 <Input
                     label="Username"
                     name="username"

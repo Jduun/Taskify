@@ -21,13 +21,14 @@ const AuthPage = ({ id, label, name, placeholder, type }) => {
                 console.log('Вход выполнен успешно');
             })
             .catch(error => {
-                // Обработка ошибки
-                console.log(values)
-                console.log('Ошибка входа:', error);
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        //setFieldError('username', 'This username is already taken.');
+                        console.log("")
+                    }
+                }
             });
     }
-
-    //console.log(credentials)
 
     return (
         <div
@@ -36,12 +37,10 @@ const AuthPage = ({ id, label, name, placeholder, type }) => {
                 <SignIn
                     toggleForm={toggleForm}
                     sendCredentials={sendCredentials}
-                    //setCredentials={setCredentials}
                 /> :
                 <SignUp
                     toggleForm={toggleForm}
                     sendCredentials={sendCredentials}
-                    //setCredentials={setCredentials}
                 />
             }
         </div>

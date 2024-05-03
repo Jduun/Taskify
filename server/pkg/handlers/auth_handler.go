@@ -10,6 +10,7 @@ import (
 	"server/pkg/models"
 	"server/pkg/repositories"
 	"server/pkg/utils"
+	"time"
 )
 
 func handleSignIn(c *gin.Context) {
@@ -41,7 +42,29 @@ func handleSignIn(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"signin": "success"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"signin": "success"})
+	//c.IndentedJSON(http.StatusOK, gin.H{"signin": "success"})
+
+	// send token
+	payload := map[string]any{
+		"id":       user.ID,
+		"username": user.Username,
+	}
+	token, err := utils.CreateToken(payload)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	//c.Header("Authorization", token)
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	}
+	http.SetCookie(c.Writer, cookie)
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
 }
 
 func handleSignUp(c *gin.Context) {
@@ -82,5 +105,27 @@ func handleSignUp(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"signup": "success"})
+	//c.IndentedJSON(http.StatusOK, gin.H{"signup": "success"})
+
+	// send token
+	payload := map[string]any{
+		"id":       user.ID,
+		"username": user.Username,
+	}
+	token, err := utils.CreateToken(payload)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	//c.Header("Authorization", token)
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	}
+	http.SetCookie(c.Writer, cookie)
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
 }

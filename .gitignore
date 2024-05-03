@@ -28,3 +28,4 @@ server/env_vars.env
 server/main
 
 .idea
+tasks.txt

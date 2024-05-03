@@ -7,13 +7,27 @@ import (
 	"os"
 	"server/pkg/handlers"
 	"server/pkg/repositories"
+	"server/pkg/utils"
 )
 
 func main() {
-	var err error
+	var (
+		serverPort string
+		serverHost string
+		ok         bool
+		err        error
+	)
+
 	err = godotenv.Load("env_vars.env")
 	if err != nil {
 		log.Fatalf(".env file opening error: %s\n", err.Error())
+	}
+
+	utils.SecretKey, ok = os.LookupEnv("SECRET_KEY")
+	serverPort, ok = os.LookupEnv("SERVER_PORT")
+	serverHost, ok = os.LookupEnv("SERVER_HOST")
+	if !ok {
+		log.Fatalf("Couldn't read the environment variable\n")
 	}
 
 	if err = repositories.DBInit(); err != nil {
@@ -23,9 +37,6 @@ func main() {
 
 	router := gin.Default()
 	handlers.RoutesInit(router)
-
-	serverPort := os.Getenv("SERVER_PORT")
-	serverHost := os.Getenv("SERVER_HOST")
 
 	if err = router.Run(serverHost + ":" + serverPort); err != nil {
 		log.Fatalf("Failed to start server: %s\n", err.Error())
