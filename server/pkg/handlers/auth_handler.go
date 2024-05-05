@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+var cookieName = "token"
+
 func handleSignIn(c *gin.Context) {
 	type SignInFormData struct {
 		Username string `json:"username"`
@@ -57,7 +59,7 @@ func handleSignIn(c *gin.Context) {
 
 	//c.Header("Authorization", token)
 	cookie := &http.Cookie{
-		Name:     "token",
+		Name:     cookieName,
 		Value:    token,
 		Path:     "/",
 		Expires:  time.Now().Add(24 * time.Hour),
@@ -120,7 +122,7 @@ func handleSignUp(c *gin.Context) {
 
 	//c.Header("Authorization", token)
 	cookie := &http.Cookie{
-		Name:     "token",
+		Name:     cookieName,
 		Value:    token,
 		Path:     "/",
 		Expires:  time.Now().Add(24 * time.Hour),
@@ -128,4 +130,21 @@ func handleSignUp(c *gin.Context) {
 	}
 	http.SetCookie(c.Writer, cookie)
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
+}
+
+func checkToken(c *gin.Context) {
+	cookie, err := c.Request.Cookie(cookieName)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	tokenString := cookie.Value
+	_, err = utils.ValidateToken(tokenString)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "valid token"})
 }

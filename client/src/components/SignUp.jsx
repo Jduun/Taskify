@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import Input from "./Input";
 import * as yup from 'yup';
 import axios from "axios";
+import { HttpStatusCode } from "axios";
 
 const initialValues = {
     username: "",
@@ -36,7 +37,7 @@ const SignUp = ({ toggleForm, sendCredentials } ) => {
                 })
                 .catch(error => {
                     if (error.response) {
-                        if (error.response.status === 409) {
+                        if (error.response.status === HttpStatusCode.Conflict) {
                             setFieldError('username', 'User with the same username already exists');
                         }
                     }

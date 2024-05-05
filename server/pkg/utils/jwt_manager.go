@@ -10,8 +10,7 @@ var SecretKey string
 
 func CreateToken(payload map[string]any) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	// type assertions
-	claims := token.Claims.(jwt.MapClaims)
+	claims := token.Claims.(jwt.MapClaims) // type assertions
 	claims["id"] = payload["id"]
 	claims["username"] = payload["username"]
 	claims["exp"] = time.Now().Add(time.Hour / 60).Unix()
@@ -27,13 +26,14 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(
 		tokenString,
 		func(token *jwt.Token) (interface{}, error) {
-			// Проверяем, что токен использует алгоритм подписи HMAC и использует наш секретный ключ
+			// We check that the token uses the HMAC signature algorithm and uses our secret key
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return SecretKey, nil
+			return []byte(SecretKey), nil
 		})
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 

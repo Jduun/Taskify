@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import Input from "./Input";
 import * as yup from 'yup';
 import axios from "axios";
+import { HttpStatusCode } from "axios";
 
 const initialValues = {
     username: "",
@@ -14,10 +15,6 @@ const schema = yup.object().shape({
         .required('Username is required')
         .max(50, "The username must be less 50 characters long"),
     password: yup.string()
-        .required('Password is required')
-        .min(8, 'The password must be at least 8 characters long')
-        .matches(/(?=.*[0-9])/, 'The password must contain at least one digit')
-        .matches(/(?=.*[A-Z|А-Я])/, 'The password must contain at least one capital letter'),
 })
 
 const SignIn = ({ toggleForm, sendCredentials }) => {
@@ -32,7 +29,7 @@ const SignIn = ({ toggleForm, sendCredentials }) => {
                 })
                 .catch(error => {
                     if (error.response) {
-                        if (error.response.status === 401) {
+                        if (error.response.status === HttpStatusCode.Unauthorized) {
                             setFieldError('password', 'Incorrect username or password');
                         }
                     }
