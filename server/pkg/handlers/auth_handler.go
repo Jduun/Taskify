@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -13,7 +14,7 @@ import (
 	"time"
 )
 
-var cookieName = "token"
+const CookieName = "token"
 
 func handleSignIn(c *gin.Context) {
 	type SignInFormData struct {
@@ -59,7 +60,7 @@ func handleSignIn(c *gin.Context) {
 
 	//c.Header("Authorization", token)
 	cookie := &http.Cookie{
-		Name:     cookieName,
+		Name:     CookieName,
 		Value:    token,
 		Path:     "/",
 		Expires:  time.Now().Add(24 * time.Hour),
@@ -122,7 +123,7 @@ func handleSignUp(c *gin.Context) {
 
 	//c.Header("Authorization", token)
 	cookie := &http.Cookie{
-		Name:     cookieName,
+		Name:     CookieName,
 		Value:    token,
 		Path:     "/",
 		Expires:  time.Now().Add(24 * time.Hour),
@@ -132,19 +133,32 @@ func handleSignUp(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
 }
 
+func handleSignOut(c *gin.Context) {
+	cookie := &http.Cookie{
+		Name:     CookieName,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+	http.SetCookie(c.Writer, cookie)
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "The user logged out of the account"})
+}
+
 func checkToken(c *gin.Context) {
-	cookie, err := c.Request.Cookie(cookieName)
+	cookie, err := c.Request.Cookie(CookieName)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 	tokenString := cookie.Value
-	_, err = utils.ValidateToken(tokenString)
+	token, err := utils.ValidateToken(tokenString)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 		return
 	}
+	username := token.Claims.(jwt.MapClaims)["username"]
 
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "valid token"})
+	c.IndentedJSON(http.StatusOK, gin.H{"username": username})
 }

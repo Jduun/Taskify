@@ -6,3 +6,8 @@ type User struct {
 	Password string
 	Salt     string
 }
+
+type Board struct {
+	ID   uint32
+	Name string
+}

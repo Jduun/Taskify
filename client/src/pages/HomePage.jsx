@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Board from "../components/Board";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
+import {useAuth} from "../utils/Auth";
 
 const HomePage = () => {
+    const auth = useAuth()
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
     const [activeBoard, setActiveBoard] = useState({ "id": 1, "name": "Board 1" })
     const [boardList, setBoardList] = useState([
@@ -21,6 +23,7 @@ const HomePage = () => {
 
     return (
         <div className="h-screen flex flex-col">
+            <p className="text-red-600">{ auth.username }</p>
             <Topbar
                 boardName={activeBoard.name}
                 toggleSidebar={toggleSidebar} />

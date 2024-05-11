@@ -4,6 +4,8 @@ import Input from "./Input";
 import * as yup from 'yup';
 import axios from "axios";
 import { HttpStatusCode } from "axios";
+import {useAuth} from "../utils/Auth";
+import { useNavigate } from "react-router-dom";
 
 const initialValues = {
     username: "",
@@ -18,22 +20,34 @@ const schema = yup.object().shape({
 })
 
 const SignIn = ({ toggleForm, sendCredentials }) => {
+    const auth = useAuth()
+    const navigate = useNavigate()
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={schema}
-            onSubmit={(values, { setFieldError }) => {
-                axios.post("/api/signin", values)
-                .then(response => {
-                    console.log('User has successfully logged into the account', response);
-                })
-                .catch(error => {
-                    if (error.response) {
-                        if (error.response.status === HttpStatusCode.Unauthorized) {
-                            setFieldError('password', 'Incorrect username or password');
-                        }
+            onSubmit={ async (values, { setFieldError }) => {
+                try {
+                    const responseStatus = await auth.signIn(values);
+                    console.log('Статус успешного входа:', responseStatus);
+                    navigate('/')
+                } catch (errorResponseStatus) {
+                    console.error('Статус ошибки входа:', errorResponseStatus);
+                    if (errorResponseStatus === HttpStatusCode.Unauthorized) {
+                        setFieldError('password', 'Incorrect username or password');
                     }
-                });
+                }
+/*
+                let responseStatus = auth.signIn(values)
+                console.log("RESPONSE STATUS =", responseStatus)
+                if (responseStatus === HttpStatusCode.Ok) {
+                    //navigate('/')
+                    console.log("NAVIGATE")
+                }
+                if (responseStatus === HttpStatusCode.Unauthorized) {
+                    setFieldError('password', 'Incorrect username or password');
+                }
+                */
             }}
         >
             <Form

@@ -2,8 +2,9 @@ import React from "react";
 import { Formik, Form } from "formik";
 import Input from "./Input";
 import * as yup from 'yup';
-import axios from "axios";
 import { HttpStatusCode } from "axios";
+import { useAuth } from "../utils/Auth";
+import { useNavigate } from "react-router-dom";
 
 const initialValues = {
     username: "",
@@ -26,22 +27,23 @@ const schema = yup.object().shape({
 })
 
 const SignUp = ({ toggleForm, sendCredentials } ) => {
+    const auth = useAuth()
+    const navigate = useNavigate()
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={schema}
-            onSubmit={(values, { setFieldError }) => {
-                axios.post("/api/signup", values)
-                .then(response => {
-                    console.log('User has been successfully registered', response);
-                })
-                .catch(error => {
-                    if (error.response) {
-                        if (error.response.status === HttpStatusCode.Conflict) {
-                            setFieldError('username', 'User with the same username already exists');
-                        }
+            onSubmit={ async (values, { setFieldError }) => {
+                try {
+                    const responseStatus = await auth.signUp(values);
+                    console.log('Статус успешного входа:', responseStatus);
+                    navigate('/')
+                } catch (errorResponseStatus) {
+                    console.error('Статус ошибки входа:', errorResponseStatus);
+                    if (errorResponseStatus === HttpStatusCode.Conflict) {
+                        setFieldError('username', 'User with the same username already exists');
                     }
-                });
+                }
             }}
         >
             <Form

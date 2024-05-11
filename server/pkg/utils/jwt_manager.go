@@ -13,7 +13,7 @@ func CreateToken(payload map[string]any) (string, error) {
 	claims := token.Claims.(jwt.MapClaims) // type assertions
 	claims["id"] = payload["id"]
 	claims["username"] = payload["username"]
-	claims["exp"] = time.Now().Add(time.Hour / 60).Unix()
+	claims["exp"] = time.Now().Add(time.Hour).Unix()
 	// We sign this token with SecretKey
 	tokenString, err := token.SignedString([]byte(SecretKey))
 	if err != nil {
