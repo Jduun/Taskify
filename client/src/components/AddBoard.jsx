@@ -1,25 +1,37 @@
 import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import Xmark from "../icons/Xmark";
+import axios from "axios";
+import {json} from "react-router-dom";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddCard = ({ column, setCards }) => {
+const AddBoard = ({ setBoardList }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        if (!text.trim().length) {
+        const boardName = text.trim()
+
+        if (!boardName.length) {
             return
         }
-        const newCard = {
-            column,
-            title: text.trim(),
-            id: Math.random().toString()
-        }
-        setCards((cards) => [...cards, newCard])
-        setAdding(false)
+
+        axios.post('/api/boards', { "name": boardName }, { withCredentials: true })
+            .then(response => {
+                console.log("Create board response: ", response)
+                const jsonStringBoard = response.data
+                const jsonBoard = JSON.parse(jsonStringBoard)
+                if (jsonBoard !== null) {
+                    console.log(jsonBoard)
+                    setBoardList(boardList => [...boardList, jsonBoard])
+                    setAdding(false)
+                }
+            })
+            .catch(error => {
+                console.log("Error:", error)
+            })
     }
 
     return (
@@ -28,9 +40,9 @@ const AddCard = ({ column, setCards }) => {
                 <form onSubmit={handleSubmit}>
                     <TextareaAutosize
                         onChange={(e) => setText(e.target.value)}
-                        maxLength={500}
+                        maxLength={100}
                         autoFocus
-                        placeholder="Add new task..."
+                        placeholder="Add new board..."
                         className="w-full rounded border border-violet-400 bg-violet-400/20 p-3 text-sm text-neutral-50 placeholder-violet-300 focus:outline-0 resize-none"
                     />
                     <div className="mt-1.5 flex items-center justify-start gap-1.5">
@@ -53,7 +65,7 @@ const AddCard = ({ column, setCards }) => {
                     onClick={() => setAdding(true)}
                     className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-neutral-50"
                 >
-                    <span>Add card</span>
+                    <span className="text-base"><strong>Add board</strong></span>
                     <PlusIcon />
                 </button>
             )
@@ -62,4 +74,4 @@ const AddCard = ({ column, setCards }) => {
     )
 }
 
-export default AddCard
+export default AddBoard

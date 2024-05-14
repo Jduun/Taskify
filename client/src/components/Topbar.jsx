@@ -9,29 +9,32 @@ const Topbar = ({ boardName, toggleSidebar }) => {
     const navigate = useNavigate()
 
     return (
-        <header className="bg-neutral-900 p-3">
+        <header className="bg-mainColor-900 p-3 border-b">
             <div className="flex justify-between items-center">
                 <button
                     onClick={toggleSidebar}
-                    className="hover:bg-neutral-700 rounded-md p-1">
-                    <Bars3Icon />
+                    className="hover:bg-mainColor-300 rounded-md p-1 bg-mainColor-900">
+                    <Bars3Icon/>
                 </button>
                 <strong className="text-white">
                     {boardName}
                 </strong>
-                <button
-                    onClick={ async () => {
-                        try {
-                            const responseStatus = await auth.signOut();
-                            console.log('Cтатус успешного выхода из аккаунта: ', responseStatus)
-                            navigate('/auth')
-                        } catch (errorResponseStatus) {
-                            console.error('Статус ошибки выхода:', errorResponseStatus);
-                        }
-                    }}
-                    className="hover:bg-neutral-700 rounded-md p-1">
-                    <LogoutIcon />
-                </button>
+                <div className="flex flex-row">
+                    <p className="text-white hover:text-purple-700 cursor-pointer">{auth.username}</p>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const responseStatus = await auth.signOut();
+                                console.log('Cтатус успешного выхода из аккаунта: ', responseStatus)
+                                navigate('/auth')
+                            } catch (errorResponseStatus) {
+                                console.error('Статус ошибки выхода:', errorResponseStatus);
+                            }
+                        }}
+                        className="hover:bg-mainColor-300 rounded-md p-1">
+                        <LogoutIcon/>
+                    </button>
+                </div>
             </div>
         </header>
     )

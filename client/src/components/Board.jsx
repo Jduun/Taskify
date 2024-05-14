@@ -43,7 +43,7 @@ const Board = () => {
     }
 
     return (
-        <div className="flex w-full gap-3 p-3 overflow-y-hidden">
+        <div className="flex w-full gap-3 p-3 overflow-y-scroll">
             <Column
                 title="Backlog"
                 column="backlog"

@@ -9,7 +9,6 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import { AuthProvider, useAuth } from "./utils/Auth";
 
 function App() {
-
     return (
         <div className="App">
             <AuthProvider>

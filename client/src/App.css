@@ -11,7 +11,7 @@ html, body {
 }
 
 body {
-  @apply bg-gray-950;
+  @apply bg-mainColor-900;
 }
 
 ::-webkit-scrollbar {
@@ -23,5 +23,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-xl bg-purple-800;
+  @apply rounded-xl bg-violet-800;
 }

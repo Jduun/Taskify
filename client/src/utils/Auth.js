@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
 
             if (response.status === HttpStatusCode.Ok) {
                 setIsAuthenticated(true);
-                // NEED TO SET USERNAME
                 setUsername(response.data.username)
                 console.log(response)
                 console.log("You're authenticated")

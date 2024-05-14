@@ -16,7 +16,7 @@ import (
 
 const CookieName = "token"
 
-func handleSignIn(c *gin.Context) {
+func signIn(c *gin.Context) {
 	type SignInFormData struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -70,7 +70,7 @@ func handleSignIn(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
 }
 
-func handleSignUp(c *gin.Context) {
+func signUp(c *gin.Context) {
 	type SignUpFormData struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
@@ -133,7 +133,7 @@ func handleSignUp(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Token passed successfully"})
 }
 
-func handleSignOut(c *gin.Context) {
+func signOut(c *gin.Context) {
 	cookie := &http.Cookie{
 		Name:     CookieName,
 		Value:    "",
@@ -148,7 +148,7 @@ func handleSignOut(c *gin.Context) {
 func checkToken(c *gin.Context) {
 	cookie, err := c.Request.Cookie(CookieName)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 	tokenString := cookie.Value
@@ -161,4 +161,5 @@ func checkToken(c *gin.Context) {
 	username := token.Claims.(jwt.MapClaims)["username"]
 
 	c.IndentedJSON(http.StatusOK, gin.H{"username": username})
+
 }
