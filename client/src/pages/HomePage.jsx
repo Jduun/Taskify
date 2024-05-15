@@ -35,7 +35,7 @@ const HomePage = () => {
     return (
         <div className="h-screen flex flex-col">
             <Topbar
-                boardName={activeBoard.name}
+                activeBoard={activeBoard}
                 toggleSidebar={toggleSidebar}/>
             <div className="flex flex-grow overflow-y-hidden">
                 <Sidebar

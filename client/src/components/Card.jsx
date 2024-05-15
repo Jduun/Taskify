@@ -13,15 +13,15 @@ const Card = ({ title, id, column, handleDragStart, deleteCard }) => {
                             hover:bg-extraColor"
             >
                 <div>
-                    <p className="text-sm text-textColor h-auto whitespace-pre-wrap break-words">
+                    <p className="text-sm text-textColor h-auto whitespace-pre-wrap break-words select-none">
                         {title}
                     </p>
                 </div>
                 <div>
                     <button
                         onClick={() => { deleteCard(id) }}
-                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity 
-                        duration-150 ease-in-out rounded-md stroke-white p-1 bg-mainColor-700 hover:bg-mainColor-300"
+                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity
+                        duration-150 ease-in-out rounded-md stroke-white p-1 bg-mainColor-700 active:bg-mainColor-300"
                     >
                         <TrashIcon />
                     </button>

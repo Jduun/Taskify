@@ -5,7 +5,7 @@ import axios from "axios";
 import {json} from "react-router-dom";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddBoard = ({ setBoardList }) => {
+const AddColumn = ({ setBoardList }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
@@ -64,4 +64,4 @@ const AddBoard = ({ setBoardList }) => {
     )
 }
 
-export default AddBoard
+export default AddColumn

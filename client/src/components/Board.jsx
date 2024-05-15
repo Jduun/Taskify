@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Column from "./Column";
+import AddBoard from "./AddBoard";
 
 
 const Board = () => {
+    const [columnList, setColumnList] = useState([])
+
     const DEFAULT_CARDS = [
         // BACKLOG
         { title: "Look into render bug in dashboard", id: "1", column: "backlog" },
@@ -76,6 +79,7 @@ const Board = () => {
                 setCards={setCards}
                 deleteCard={deleteCard}
             />
+            <AddBoard />
         </div>
 
     )

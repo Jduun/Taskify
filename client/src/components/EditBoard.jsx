@@ -10,7 +10,7 @@ const EditBoard = ({ editableBoard, setEditableBoard }) => {
     const [text, setText] = useState(editableBoard.name)
 
     const handleEditBoard = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter') {
             e.preventDefault();
             const newBoardName = e.target.value
             axios.put(`/api/boards/${editableBoard.id}`,
@@ -24,6 +24,8 @@ const EditBoard = ({ editableBoard, setEditableBoard }) => {
                 .catch(error => {
                     console.log("Error:", error)
                 })
+        } else if (e.key === 'Escape') {
+            setEditableBoard(null)
         }
     }
 
@@ -36,7 +38,8 @@ const EditBoard = ({ editableBoard, setEditableBoard }) => {
                 onKeyDown={(e) => {handleEditBoard(e)}}
                 maxLength={100}
                 autoFocus
-                className="w-full rounded border border-violet-400 bg-violet-400/20 p-3 text-sm text-neutral-50 placeholder-violet-300 focus:outline-0 resize-none"
+                className="w-full rounded border border-violet-400 bg-violet-400/20 p-3 text-sm
+                text-neutral-50 placeholder-violet-300 focus:outline-0 resize-none"
             />
         </div>
     )
