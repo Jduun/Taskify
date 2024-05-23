@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
-import Xmark from "../icons/Xmark";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddTask = ({ column, setCards }) => {
+const AddCard = ({ column, setCards }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
-    const handleAddTask = (e) => {
+    const handleAddCard = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault()
 
@@ -31,11 +30,11 @@ const AddTask = ({ column, setCards }) => {
             {adding ? (
                 <TextareaAutosize
                     onChange={(e) => setText(e.target.value)}
-                    onKeyDown={(e) => {handleAddTask(e)}}
+                    onKeyDown={(e) => {handleAddCard(e)}}
                     maxLength={500}
                     autoFocus
                     onBlur={() => setAdding(false)}
-                    placeholder="Add new task..."
+                    placeholder="Add new card..."
                     className="w-full rounded border border-violet-400 bg-violet-400/20 p-3 text-sm text-neutral-50 placeholder-violet-300 focus:outline-0 resize-none"
                 />
             ) : (
@@ -43,7 +42,7 @@ const AddTask = ({ column, setCards }) => {
                     onClick={() => setAdding(true)}
                     className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-neutral-50"
                 >
-                    <span>Add task</span>
+                    <span>Add card</span>
                     <PlusIcon />
                 </button>
             )
@@ -52,4 +51,4 @@ const AddTask = ({ column, setCards }) => {
     )
 }
 
-export default AddTask
+export default AddCard

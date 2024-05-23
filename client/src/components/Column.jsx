@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import Card from "./Card"
 import DropIndicator from "./DropIndicator";
-import AddTask from "./AddTask";
+import AddCard from "./AddCard";
+import Xmark from "../icons/Xmark";
+import axios from "axios";
+import EditColumn from "./EditColumn";
 
-const Column = ({ title, headingColor, column, cards, setCards, deleteCard }) => {
+const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableColumn, cards, setCards, deleteCard }) => {
     const [active, setActive] = useState(false)
 
     const getIndicators = () => {
-        return Array.from(document.querySelectorAll(`[data-column="${column}"]`))
+        return Array.from(document.querySelectorAll(`[data-column="${column.name}"]`))
     }
 
     const highlightIndicator = (e) => {
@@ -97,13 +100,44 @@ const Column = ({ title, headingColor, column, cards, setCards, deleteCard }) =>
     }
 
     const filteredCards = cards.filter((card) => card.column === column)
+    const [isHovering, setIsHovering] = useState(false)
+
+    const handleDeleteColumn = (column) => {
+        console.log("Delete the column", column)
+        axios.delete(`/api/boards/${activeBoard.id}/columns/${column.id}`, { withCredentials: true })
+            .then(response => {
+                console.log("Column successfully deleted", response)
+                setColumns(columns => columns.filter(currColumn => currColumn.id !== column.id))
+            })
+            .catch(error => {
+                console.log("Error:", error)
+            })
+    }
 
     return (
         <div className="flex flex-col w-56 shrink-0">
-            <div className="mb-3 flex items-center justify-between">
-                <h3 className={`font-medium ${headingColor}`}>{title}</h3>
-                <span className="rounded text-sm text-neutral-400">{filteredCards.length}</span>
-            </div>
+            {editableColumn !== column ? (
+                <div onDoubleClick={() => { setEditableColumn(column) }}
+                     onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+                     className="flex items-baseline">
+                    <h3 className="w-[90%] font-medium text-textColor whitespace-pre-wrap break-words select-none">{column.name}</h3>
+                    <button
+                        className={`ml-2 rounded-full hover:bg-mainColor-300 opacity-${isHovering ? "100" : "0"}`}
+                        onClick={() => handleDeleteColumn(column)}
+                    >
+                        <Xmark/>
+                    </button>
+                </div> ) : (
+                <div>
+                    <EditColumn
+                        activeBoard={activeBoard}
+                        editableColumn={editableColumn}
+                        setEditableColumn={setEditableColumn}
+                        setColumns={setColumns}
+                    />
+                </div>
+                )
+            }
             <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -114,12 +148,10 @@ const Column = ({ title, headingColor, column, cards, setCards, deleteCard }) =>
                     return <Card key={card.id} {...card} handleDragStart={handleDragStart} deleteCard={deleteCard} />
                 })}
                 <DropIndicator beforeId={"-1"} column={column} />
-                <AddTask column={column} setCards={setCards} />
+                <AddCard column={column} setCards={setCards} />
             </div>
         </div>
     )
 }
-//
-//
-//
+
 export default Column

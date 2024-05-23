@@ -1,41 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, createFactory} from "react";
 import Column from "./Column";
-import AddBoard from "./AddBoard";
+import AddColumn from "./AddColumn";
+import axios from "axios";
+import column from "./Column";
 
+const Board = ({ activeBoard }) => {
+    const [columns, setColumns] = useState([])
+    const [cards, setCards] = useState([])
+    const [labels, setLabels] = useState([])
+    const [cardLabels, setCardLabels] = useState([])
+    const [editableColumn, setEditableColumn] = useState(null)
 
-const Board = () => {
-    const [columnList, setColumnList] = useState([])
+    useEffect(() => {
+        if (activeBoard !== null) {
+            console.log("ACTIVE:", activeBoard, activeBoard !== [])
+            axios.get(`/api/boards/${activeBoard.id}/columns`, {withCredentials: true})
+                .then(response => {
+                    const jsonStringColumns = response.data
+                    const jsonColumns = JSON.parse(jsonStringColumns)
+                    console.log("Columns: ", jsonColumns)
+                    setColumns(jsonColumns === null ? [] : jsonColumns)
+                })
+                .catch(error => console.log("Error:", error))
+        }
+    }, [activeBoard]);
 
     const DEFAULT_CARDS = [
         // BACKLOG
-        { title: "Look into render bug in dashboard", id: "1", column: "backlog" },
-        { title: "SOX compliance checklist", id: "2", column: "backlog" },
-        { title: "[SPIKE] Migrate to Azure", id: "3", column: "backlog" },
-        { title: "Document Notifications service", id: "4", column: "backlog" },
-        // TODO
-        {
-            title: "Research DB options for new microservice",
-            id: "5",
-            column: "todo",
-        },
-        { title: "Postmortem for outage", id: "6", column: "todo" },
-        { title: "Sync with product on Q3 roadmap", id: "7", column: "todo" },
 
-        // DOING
-        {
-            title: "Refactor context providers to use Zustand",
-            id: "8",
-            column: "doing",
-        },
-        { title: "Add logging to daily CRON", id: "9", column: "doing" },
-        // DONE
-        {
-            title: "Set up DD dashboards for Lambda listener",
-            id: "10",
-            column: "done",
-        },
     ];
-    const [cards, setCards] = useState(DEFAULT_CARDS)
 
     useEffect(() => {
         console.log(cards)
@@ -47,41 +40,31 @@ const Board = () => {
 
     return (
         <div className="flex w-full gap-3 p-3 overflow-y-scroll">
-            <Column
-                title="Backlog"
-                column="backlog"
-                headingColor="text-neutral-500"
-                cards={cards}
-                setCards={setCards}
-                deleteCard={deleteCard}
+            <div>
+                <input type="color"/>
+            </div>
+            {
+                columns.map((column) => (
+                    <Column
+                        key={column.id}
+                        activeBoard={activeBoard}
+                        column={column}
+                        setColumns={setColumns}
+                        editableColumn={editableColumn}
+                        setEditableColumn={setEditableColumn}
+                        cards={cards}
+                        setCards={setCards}
+                        deleteCard={deleteCard}
+                    />
+                    )
+                )
+            }
+            <AddColumn
+                columns={ columns }
+                setColumns={ setColumns }
+                activeBoard={ activeBoard }
             />
-            <Column
-                title="TODO"
-                column="todo"
-                headingColor="text-yellow-200"
-                cards={cards}
-                setCards={setCards}
-                deleteCard={deleteCard}
-            />
-            <Column
-                title="In progress"
-                column="doing"
-                headingColor="text-blue-200"
-                cards={cards}
-                setCards={setCards}
-                deleteCard={deleteCard}
-            />
-            <Column
-                title="Complete"
-                column="done"
-                headingColor="text-emerald-200"
-                cards={cards}
-                setCards={setCards}
-                deleteCard={deleteCard}
-            />
-            <AddBoard />
         </div>
-
     )
 }
 

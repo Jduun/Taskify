@@ -7,10 +7,10 @@ module.exports = {
         mainColor: {
           "300": "#515151",
           "500": "#292B2F",
-          "700": "#1c1d20",
+          "700": "#1C1D20",
           "900": "#121418"
         },
-        extraColor: "violet-800",
+        extraColor: "#5B21B6",
         textColor: "white"
       }
     },

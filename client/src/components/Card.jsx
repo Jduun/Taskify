@@ -9,8 +9,7 @@ const Card = ({ title, id, column, handleDragStart, deleteCard }) => {
             <div
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, { title, id, column })}
-                className="group relative cursor-grab rounded border border-white hover:border-violet-600 bg-mainColor-700 p-3 active:cursor-grabbing
-                            hover:bg-extraColor"
+                className="group relative cursor-grab rounded border-2 border-white hover:border-extraColor bg-mainColor-700 p-3 active:cursor-grabbing"
             >
                 <div>
                     <p className="text-sm text-textColor h-auto whitespace-pre-wrap break-words select-none">
@@ -21,7 +20,7 @@ const Card = ({ title, id, column, handleDragStart, deleteCard }) => {
                     <button
                         onClick={() => { deleteCard(id) }}
                         className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity
-                        duration-150 ease-in-out rounded-md stroke-white p-1 bg-mainColor-700 active:bg-mainColor-300"
+                        duration-150 ease-in-out rounded-md stroke-white p-1 bg-mainColor-700 hover:bg-mainColor-300"
                     >
                         <TrashIcon />
                     </button>

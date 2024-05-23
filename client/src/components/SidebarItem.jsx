@@ -3,7 +3,7 @@ import TrashIcon from "../icons/TrashIcon";
 import PencilIcon from "../icons/PencilIcon";
 import axios from "axios";
 
-const SidebarItem = ({ board, setBoardList, activeBoard, setActiveBoard, setEditableBoard }) => {
+const SidebarItem = ({ board, setBoards, activeBoard, setActiveBoard, setEditableBoard }) => {
     // This is done for adaptive design
     const [showButton, setShowButton] = useState(false)
 
@@ -17,7 +17,7 @@ const SidebarItem = ({ board, setBoardList, activeBoard, setActiveBoard, setEdit
         axios.delete(`/api/boards/${board.id}`, { withCredentials: true })
             .then(response => {
                 console.log("Board successfully deleted", response)
-                setBoardList(boardList => boardList.filter(currBoard => currBoard.id !== board.id))
+                setBoards(boards => boards.filter(currBoard => currBoard.id !== board.id))
             })
             .catch(error => {
                 console.log("Error:", error)
@@ -26,7 +26,7 @@ const SidebarItem = ({ board, setBoardList, activeBoard, setActiveBoard, setEdit
 
     return (
         <div
-            className={`hover:bg-violet-500/30 ${board.id === activeBoard.id ? "bg-violet-500/30" : "bg-mainColor-900"}`
+            className={`${board.id === activeBoard.id ? "bg-violet-500/40" : "bg-mainColor-900 hover:bg-violet-500/20"}`
                 + " group relative border-b border-b-mainColor-300 cursor-pointer select-none"}>
             <div
                 onClick={() => {

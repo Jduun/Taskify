@@ -16,11 +16,11 @@ func NewBoard(board models.Board) error {
 	return err
 }
 
-func GetAllUserBoards(userID uint32) ([]models.Board, error) {
+func GetUserBoards(userID uint32) ([]models.Board, error) {
 	var boards []models.Board
 	rows, err := DB.Pool.Query(context.Background(), `
 		select * from board
-		where user_id = $1;`,
+		where user_id = $1`,
 		userID,
 	)
 	if err != nil {
@@ -59,4 +59,18 @@ func UpdateBoard(boardID uint32, newBoardName string) error {
 		boardID,
 	)
 	return err
+}
+
+func IsBoardOwnedByUser(boardID uint32, userID uint32) (bool, error) {
+	var isOwned bool
+	err := DB.Pool.QueryRow(context.Background(), `
+		select exists (
+			select 1
+			from board
+			where id = $1 and user_id = $2
+		);`,
+		boardID,
+		userID,
+	).Scan(&isOwned)
+	return isOwned, err
 }

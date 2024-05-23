@@ -1,31 +1,30 @@
 import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
-import Xmark from "../icons/Xmark";
 import axios from "axios";
-import {json} from "react-router-dom";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddBoard = ({ setBoardList }) => {
+const AddBoard = ({ setBoards }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
     const handleAddBoard = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault()
-            const boardName = text.trim()
-            if (!boardName.length) {
+            const columnName = text.trim()
+            if (!columnName.length) {
                 return
             }
             axios.post('/api/boards',
-                {"name": boardName},
-                {withCredentials: true})
+                { "name": columnName },
+                { withCredentials: true })
                 .then(response => {
-                    console.log("Create board response: ", response)
+                    console.log("Create column response: ", response)
                     const jsonStringBoard = response.data
                     const jsonBoard = JSON.parse(jsonStringBoard)
                     if (jsonBoard !== null) {
                         console.log(jsonBoard)
-                        setBoardList(boardList => [...boardList, jsonBoard])
+                        setBoards(boards =>
+                            [...boards, jsonBoard].sort((a, b) => a.name.localeCompare(b.name)))
                         setAdding(false)
                     }
                 })
@@ -42,7 +41,7 @@ const AddBoard = ({ setBoardList }) => {
             {adding ? (
                 <TextareaAutosize
                     onChange={(e) => setText(e.target.value)}
-                    onKeyDown={(e) => {handleAddBoard(e)}}
+                    onKeyDown={(e) => { handleAddBoard(e) }}
                     maxLength={100}
                     autoFocus
                     onBlur={() => setAdding(false)}

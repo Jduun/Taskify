@@ -23,5 +23,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-xl bg-violet-800;
+  @apply rounded-xl bg-extraColor;
 }

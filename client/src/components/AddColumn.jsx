@@ -1,31 +1,30 @@
 import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
-import Xmark from "../icons/Xmark";
 import axios from "axios";
-import {json} from "react-router-dom";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddColumn = ({ setBoardList }) => {
+const AddColumn = ({ columns, setColumns, activeBoard }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
     const handleAddBoard = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault()
-            const boardName = text.trim()
-            if (!boardName.length) {
+            const columnName = text.trim()
+            if (!columnName.length) {
                 return
             }
-            axios.post('/api/boards',
-                {"name": boardName},
-                {withCredentials: true})
+            
+            axios.post(`/api/boards/${activeBoard.id}/columns`,
+                { "name": columnName, "order": columns.length },
+                { withCredentials: true })
                 .then(response => {
-                    console.log("Create board response: ", response)
-                    const jsonStringBoard = response.data
-                    const jsonBoard = JSON.parse(jsonStringBoard)
-                    if (jsonBoard !== null) {
-                        console.log(jsonBoard)
-                        setBoardList(boardList => [...boardList, jsonBoard])
+                    console.log("Create column response: ", response)
+                    const jsonStringColumn = response.data
+                    const jsonColumn = JSON.parse(jsonStringColumn)
+                    if (jsonColumn !== null) {
+                        console.log(jsonColumn)
+                        setColumns(columns => [...columns, jsonColumn])
                         setAdding(false)
                     }
                 })
@@ -46,17 +45,17 @@ const AddColumn = ({ setBoardList }) => {
                     maxLength={100}
                     autoFocus
                     onBlur={() => setAdding(false)}
-                    placeholder="Add new board..."
-                    className="w-full rounded border border-violet-400 bg-violet-400/20 p-3 text-sm
+                    placeholder="Add new column..."
+                    className="w-56 rounded border border-violet-400 bg-violet-400/20 p-3 text-sm
                     text-neutral-50 placeholder-violet-300 focus:outline-0 resize-none"
                 />
             ) : (
                 <button
                     onClick={() => setAdding(true)}
-                    className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-400
+                    className="flex w-56 items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-400
                      transition-colors hover:text-neutral-50"
                 >
-                    <span className="text-base"><strong>Add board</strong></span>
+                    <span className="text-base"><strong>Add column</strong></span>
                     <PlusIcon />
                 </button>
             )}
