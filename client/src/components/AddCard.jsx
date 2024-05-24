@@ -2,21 +2,21 @@ import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TextareaAutosize from 'react-textarea-autosize';
 
-const AddCard = ({ column, setCards }) => {
+const AddCard = ({ columnID, setCards }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
     const handleAddCard = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault()
-
-            if (!text.trim().length) {
+            const cardDescription = text.trim()
+            if (!cardDescription.length) {
                 return
             }
             const newCard = {
-                column,
-                title: text.trim(),
-                id: Math.random().toString()
+                columnID: columnID,
+                description: cardDescription,
+                id: Math.floor(Math.random() * 100000000).toString()
             }
             setCards((cards) => [...cards, newCard])
             setAdding(false)

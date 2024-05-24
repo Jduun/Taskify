@@ -2,18 +2,18 @@ import React from "react";
 import DropIndicator from "./DropIndicator";
 import TrashIcon from "../icons/TrashIcon";
 
-const Card = ({ title, id, column, handleDragStart, deleteCard }) => {
+const Card = ({ description, id, columnID, handleDragStart, deleteCard }) => {
     return (
         <div>
-            <DropIndicator beforeId={id} column={column} />
+            <DropIndicator beforeId={id} columnID={columnID} />
             <div
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, { title, id, column })}
+                onDragStart={(e) => handleDragStart(e, { description, id, columnID })}
                 className="group relative cursor-grab rounded border-2 border-white hover:border-extraColor bg-mainColor-700 p-3 active:cursor-grabbing"
             >
                 <div>
                     <p className="text-sm text-textColor h-auto whitespace-pre-wrap break-words select-none">
-                        {title}
+                        {description}
                     </p>
                 </div>
                 <div>

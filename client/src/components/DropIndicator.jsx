@@ -1,13 +1,12 @@
 import React from "react";
 
-const DropIndicator = ({ beforeId, column }) => {
+const DropIndicator = ({ beforeId, columnID }) => {
     return (
         <div
             data-before={beforeId || "-1"}
-            data-column={column}
+            data-column={columnID}
             className="my-0.5 h-0.5 w-full bg-violet-600 opacity-0"
         />
-
     )
 }
 

@@ -20,12 +20,13 @@ func RoutesInit(g *gin.Engine) {
 		authGroup.DELETE("/boards/:board_id", deleteBoard)
 		authGroup.GET("/boards/:board_id", getAllBoardInfo)
 
-		// сделать процедуру удаления колонки (реордеринг)
 		authGroup.GET("/boards/:board_id/columns", getBoardColumns)
 		authGroup.POST("/boards/:board_id/columns", createBoardColumn)
 		authGroup.PATCH("/boards/:board_id/columns/:column_id", updateBoardColumn)
 		authGroup.DELETE("/boards/:board_id/columns/:column_id", deleteBoardColumn)
 
+		// сделать триггер после удаления карточки (реордеринг)
+		// сделать реордеринг при переносах (и смену столбца при необходимости)
 		authGroup.GET("/columns/:column_id/cards", getColumnCards)
 		authGroup.POST("/columns/:column_id/cards", createColumnCard)
 		authGroup.PATCH("/columns/:column_id/cards/:card_id", updateColumnCard)

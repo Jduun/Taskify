@@ -25,11 +25,6 @@ const Board = ({ activeBoard }) => {
         }
     }, [activeBoard]);
 
-    const DEFAULT_CARDS = [
-        // BACKLOG
-
-    ];
-
     useEffect(() => {
         console.log(cards)
     }, [cards])
@@ -46,14 +41,15 @@ const Board = ({ activeBoard }) => {
             {
                 columns.map((column) => (
                     <Column
-                        key={column.id}
-                        activeBoard={activeBoard}
-                        column={column}
-                        setColumns={setColumns}
-                        editableColumn={editableColumn}
-                        setEditableColumn={setEditableColumn}
-                        cards={cards}
-                        setCards={setCards}
+                        key={ column.id }
+                        activeBoard={ activeBoard }
+                        column={ column }
+                        columns={ columns }
+                        setColumns={ setColumns }
+                        editableColumn={ editableColumn }
+                        setEditableColumn={ setEditableColumn }
+                        cards={ cards }
+                        setCards={ setCards }
                         deleteCard={deleteCard}
                     />
                     )

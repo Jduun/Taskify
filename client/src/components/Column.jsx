@@ -6,11 +6,11 @@ import Xmark from "../icons/Xmark";
 import axios from "axios";
 import EditColumn from "./EditColumn";
 
-const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableColumn, cards, setCards, deleteCard }) => {
+const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setEditableColumn, cards, setCards, deleteCard }) => {
     const [active, setActive] = useState(false)
 
     const getIndicators = () => {
-        return Array.from(document.querySelectorAll(`[data-column="${column.name}"]`))
+        return Array.from(document.querySelectorAll(`[data-column="${column.id}"]`));
     }
 
     const highlightIndicator = (e) => {
@@ -46,7 +46,8 @@ const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableCo
                 element: indicators[indicators.length - 1],
             }
         );
-
+        // console.log("Indicators:", indicators)
+        // console.log("Nearest:", el)
         return el;
     }
 
@@ -74,13 +75,14 @@ const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableCo
         const { element } = getNearestIndicator(e, indicators)
         const before = element.dataset.before || "-1"
 
+        const columnID = column.id
         if (before !== cardId) {
             let copy = [...cards]
             let cardToTransfer = copy.find((c) => c.id === cardId)
             if (!cardToTransfer) {
                 return
             }
-            cardToTransfer = { ...cardToTransfer, column }
+            cardToTransfer = { ...cardToTransfer, columnID }
             copy = copy.filter((c) => c.id !== cardId)
 
             const moveToBack = before === "-1"
@@ -99,7 +101,7 @@ const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableCo
         }
     }
 
-    const filteredCards = cards.filter((card) => card.column === column)
+    const filteredCards = cards.filter((card) => card.columnID === column.id)
     const [isHovering, setIsHovering] = useState(false)
 
     const handleDeleteColumn = (column) => {
@@ -107,7 +109,17 @@ const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableCo
         axios.delete(`/api/boards/${activeBoard.id}/columns/${column.id}`, { withCredentials: true })
             .then(response => {
                 console.log("Column successfully deleted", response)
-                setColumns(columns => columns.filter(currColumn => currColumn.id !== column.id))
+                setColumns(columns =>
+                    columns.filter(currColumn => currColumn.id !== column.id)
+                        .map(currColumn => {
+                            if (currColumn.order > column.order) {
+                                return { ...currColumn, order: currColumn.order - 1 };
+                            }
+                            return currColumn;
+                        }
+                    )
+                )
+                console.log("COLUMNS: ", columns)
             })
             .catch(error => {
                 console.log("Error:", error)
@@ -145,10 +157,17 @@ const Column = ({ activeBoard, column, setColumns, editableColumn, setEditableCo
                 className={`flex-grow w-full overflow-y-scroll transition-colors ${active ? "bg-neutral-800/50" : "bg-neutral-800/0"}`}
             >
                 {filteredCards.map((card) => {
-                    return <Card key={card.id} {...card} handleDragStart={handleDragStart} deleteCard={deleteCard} />
+                    return (
+                    <Card
+                        key={card.id}
+                        {...card}
+                        column={column}
+                        handleDragStart={handleDragStart}
+                        deleteCard={deleteCard} />
+                    )
                 })}
-                <DropIndicator beforeId={"-1"} column={column} />
-                <AddCard column={column} setCards={setCards} />
+                <DropIndicator beforeId={"-1"} columnID={column.id} />
+                <AddCard columnID={column.id} setCards={setCards} />
             </div>
         </div>
     )
