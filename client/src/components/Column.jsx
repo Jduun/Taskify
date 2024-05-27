@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "./Card"
 import DropIndicator from "./DropIndicator";
 import AddCard from "./AddCard";
 import Xmark from "../icons/Xmark";
 import axios from "axios";
 import EditColumn from "./EditColumn";
+import {type} from "@testing-library/user-event/dist/type";
 
 const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setEditableColumn, cards, setCards, deleteCard }) => {
     const [active, setActive] = useState(false)
+    const [columnCards, setColumnCards] = useState([])
+    const [isHovering, setIsHovering] = useState(false)
+    console.log("CAAARDS:", cards.filter((card) => card.columnID === Column.id))
+
 
     const getIndicators = () => {
         return Array.from(document.querySelectorAll(`[data-column="${column.id}"]`));
@@ -52,7 +57,8 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
     }
 
     const handleDragStart = (e, card) => {
-        e.dataTransfer.setData("cardId", card.id)
+        e.dataTransfer.setData("cardID", card.id)
+        console.log("Handle Drag Start: ", card.id)
     }
 
     const handleDragOver = (e) => {
@@ -67,26 +73,37 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
     }
 
     const handleDrop = (e) => {
+
         setActive(false)
         clearHighlights()
 
-        const cardId = e.dataTransfer.getData("cardId")
+        const cardID = parseInt(e.dataTransfer.getData("cardID"), 10)
+        console.log("CARDID:", cardID)
         const indicators = getIndicators()
         const { element } = getNearestIndicator(e, indicators)
-        const before = element.dataset.before || "-1"
+        const before = parseInt(element.dataset.before, 10) || -1
 
-        const columnID = column.id
-        if (before !== cardId) {
+        //const columnID = column.id
+        if (before !== cardID) {
+
             let copy = [...cards]
-            let cardToTransfer = copy.find((c) => c.id === cardId)
+            console.log("CARD LIST: ", cards)
+            console.log("COPY LIST: ", copy, cardID)
+            copy.map((c) => {
+                console.log("TEST: ", c.id, cardID, c.id === cardID, typeof c.id, typeof cardID)
+            })
+            let cardToTransfer = copy.find((c) => c.id === cardID)
+
+            console.log("Card to transfer: ", cardToTransfer, cardID)
             if (!cardToTransfer) {
                 return
             }
-            cardToTransfer = { ...cardToTransfer, columnID }
-            copy = copy.filter((c) => c.id !== cardId)
+            //cardToTransfer = { ...cardToTransfer, columnID }
+            copy = copy.filter((c) => c.id !== cardID)
 
-            const moveToBack = before === "-1"
+            const moveToBack = before === -1
             if (moveToBack) {
+                cardToTransfer.column_id = column.id
                 copy.push(cardToTransfer)
             }
             else {
@@ -94,15 +111,13 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
                 if (insertAtIndex === undefined) {
                     return
                 }
-
+                cardToTransfer.column_id = copy.find((c) => c.id === before).column_id
                 copy.splice(insertAtIndex, 0, cardToTransfer)
             }
             setCards(copy)
+            console.log("HANDLE DROP: ", cards)
         }
     }
-
-    const filteredCards = cards.filter((card) => card.columnID === column.id)
-    const [isHovering, setIsHovering] = useState(false)
 
     const handleDeleteColumn = (column) => {
         console.log("Delete the column", column)
@@ -132,7 +147,7 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
                 <div onDoubleClick={() => { setEditableColumn(column) }}
                      onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
                      className="flex items-baseline">
-                    <h3 className="w-[90%] font-medium text-textColor whitespace-pre-wrap break-words select-none">{column.name}</h3>
+                    <h3 className="w-[90%] font-medium text-textColor whitespace-pre-wrap break-words select-none">{column.name} [{column.id}]</h3>
                     <button
                         className={`ml-2 rounded-full hover:bg-mainColor-300 opacity-${isHovering ? "100" : "0"}`}
                         onClick={() => handleDeleteColumn(column)}
@@ -142,10 +157,10 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
                 </div> ) : (
                 <div>
                     <EditColumn
-                        activeBoard={activeBoard}
-                        editableColumn={editableColumn}
-                        setEditableColumn={setEditableColumn}
-                        setColumns={setColumns}
+                        activeBoard={ activeBoard }
+                        editableColumn={ editableColumn }
+                        setEditableColumn={ setEditableColumn }
+                        setColumns={ setColumns }
                     />
                 </div>
                 )
@@ -156,18 +171,27 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
                 onDrop={handleDrop}
                 className={`flex-grow w-full overflow-y-scroll transition-colors ${active ? "bg-neutral-800/50" : "bg-neutral-800/0"}`}
             >
-                {filteredCards.map((card) => {
-                    return (
-                    <Card
-                        key={card.id}
-                        {...card}
-                        column={column}
-                        handleDragStart={handleDragStart}
-                        deleteCard={deleteCard} />
-                    )
-                })}
-                <DropIndicator beforeId={"-1"} columnID={column.id} />
-                <AddCard columnID={column.id} setCards={setCards} />
+                {
+                    cards.filter((card) => card.column_id === column.id).map((card) =>  {
+                        console.log("Rendering Card:", card);
+                        return (
+                            <Card
+                                key={card.id}
+                                card={card}
+                                handleDragStart={handleDragStart}
+                                deleteCard={deleteCard}
+                            />
+                        );
+                    })
+                }
+                <DropIndicator
+                    beforeID={-1}
+                    columnID={column.id}
+                />
+                <AddCard
+                    columnID={column.id}
+                    cards={cards}
+                    setCards={setCards} />
             </div>
         </div>
     )

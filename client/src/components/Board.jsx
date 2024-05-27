@@ -6,7 +6,7 @@ import column from "./Column";
 
 const Board = ({ activeBoard }) => {
     const [columns, setColumns] = useState([])
-    const [cards, setCards] = useState([])
+    const [cards, setCards] = useState([{"id": 1, "description": "my card", "column_id": 3472668434, "order": 0}])
     const [labels, setLabels] = useState([])
     const [cardLabels, setCardLabels] = useState([])
     const [editableColumn, setEditableColumn] = useState(null)
@@ -14,12 +14,19 @@ const Board = ({ activeBoard }) => {
     useEffect(() => {
         if (activeBoard !== null) {
             console.log("ACTIVE:", activeBoard, activeBoard !== [])
-            axios.get(`/api/boards/${activeBoard.id}/columns`, {withCredentials: true})
+            axios.get(`/api/boards/${activeBoard.id}`, {withCredentials: true})
                 .then(response => {
-                    const jsonStringColumns = response.data
+                    // handle columns data
+                    const jsonStringColumns = response.data.columns
                     const jsonColumns = JSON.parse(jsonStringColumns)
                     console.log("Columns: ", jsonColumns)
                     setColumns(jsonColumns === null ? [] : jsonColumns)
+
+                    // handle cards data
+                    const jsonStringCards = response.data.cards
+                    const jsonCards = JSON.parse(jsonStringCards)
+                    console.log("Cards: ", jsonCards)
+                    setCards(jsonCards === null ? [] : jsonCards)
                 })
                 .catch(error => console.log("Error:", error))
         }
@@ -27,7 +34,7 @@ const Board = ({ activeBoard }) => {
 
     useEffect(() => {
         console.log(cards)
-    }, [cards])
+    }, [activeBoard])
 
     const deleteCard = (cardId) => {
         setCards(cards.filter((c) => c.id !== cardId))
@@ -50,7 +57,7 @@ const Board = ({ activeBoard }) => {
                         setEditableColumn={ setEditableColumn }
                         cards={ cards }
                         setCards={ setCards }
-                        deleteCard={deleteCard}
+                        deleteCard={ deleteCard }
                     />
                     )
                 )

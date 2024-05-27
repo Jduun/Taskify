@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TextareaAutosize from 'react-textarea-autosize';
+import axios from "axios";
+import card from "./Card";
 
-const AddCard = ({ columnID, setCards }) => {
+const AddCard = ({ columnID, cards, setCards }) => {
     const [text, setText] = useState("")
     const [adding, setAdding] = useState(false)
 
@@ -13,13 +15,25 @@ const AddCard = ({ columnID, setCards }) => {
             if (!cardDescription.length) {
                 return
             }
-            const newCard = {
-                columnID: columnID,
-                description: cardDescription,
-                id: Math.floor(Math.random() * 100000000).toString()
-            }
-            setCards((cards) => [...cards, newCard])
-            setAdding(false)
+
+            axios.post(`/api/columns/${columnID}/cards`,
+                { "description": cardDescription, "order": cards.length },
+                { withCredentials: true })
+                .then(response => {
+                    console.log("Create card response: ", response)
+                    const jsonStringCard = response.data
+                    const jsonCard = JSON.parse(jsonStringCard)
+                    if (jsonCard !== null) {
+                        console.log("New Card:", jsonCard)
+                        console.log("Old cards:", cards)
+                        setCards(cards => [...cards, jsonCard])
+                        console.log("New cards:", cards)
+                        setAdding(false)
+                    }
+                })
+                .catch(error => {
+                    console.log("Error:", error)
+                })
         } else if (e.key === 'Escape') {
             setAdding(false)
         }
