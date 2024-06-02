@@ -23,6 +23,7 @@ const Sidebar = ({ sidebarIsOpen, boards, setBoards, activeBoard, setActiveBoard
                             {editableBoard !== board ? (
                                 <SidebarItem
                                     board={board}
+                                    boards={boards}
                                     setBoards={setBoards}
                                     activeBoard={activeBoard}
                                     setActiveBoard={setActiveBoard}

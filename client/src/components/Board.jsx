@@ -36,37 +36,44 @@ const Board = ({ activeBoard }) => {
         console.log(cards)
     }, [activeBoard])
 
-    const deleteCard = (cardId) => {
-        setCards(cards.filter((c) => c.id !== cardId))
-    }
+    useEffect(() => {
+        console.log("[CARDS]:", cards)
+    }, [cards])
 
     return (
         <div className="flex w-full gap-3 p-3 overflow-y-scroll">
-            <div>
-                <input type="color"/>
-            </div>
             {
-                columns.map((column) => (
-                    <Column
-                        key={ column.id }
-                        activeBoard={ activeBoard }
-                        column={ column }
-                        columns={ columns }
-                        setColumns={ setColumns }
-                        editableColumn={ editableColumn }
-                        setEditableColumn={ setEditableColumn }
-                        cards={ cards }
-                        setCards={ setCards }
-                        deleteCard={ deleteCard }
-                    />
-                    )
+                activeBoard !== null ? (
+                    <>
+                        <div>
+                            <input type="color" />
+                        </div>
+                        {
+                            columns.map((column) => (
+                                <Column
+                                    key={ column.id }
+                                    activeBoard={ activeBoard }
+                                    column={ column }
+                                    columns={ columns }
+                                    setColumns={ setColumns }
+                                    editableColumn={ editableColumn }
+                                    setEditableColumn={ setEditableColumn }
+                                    cards={ cards }
+                                    setCards={ setCards }
+                                />
+                                )
+                            )
+                        }
+                        <AddColumn
+                            columns={ columns }
+                            setColumns={ setColumns }
+                            activeBoard={ activeBoard }
+                        />
+                    </>) : (
+                    <>
+                    </>
                 )
             }
-            <AddColumn
-                columns={ columns }
-                setColumns={ setColumns }
-                activeBoard={ activeBoard }
-            />
         </div>
     )
 }

@@ -17,7 +17,7 @@ const AddCard = ({ columnID, cards, setCards }) => {
             }
 
             axios.post(`/api/columns/${columnID}/cards`,
-                { "description": cardDescription, "order": cards.length },
+                { "description": cardDescription, "order": cards.filter((c) => c.column_id === columnID).length },
                 { withCredentials: true })
                 .then(response => {
                     console.log("Create card response: ", response)

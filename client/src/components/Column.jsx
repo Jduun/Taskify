@@ -5,14 +5,11 @@ import AddCard from "./AddCard";
 import Xmark from "../icons/Xmark";
 import axios from "axios";
 import EditColumn from "./EditColumn";
-import {type} from "@testing-library/user-event/dist/type";
 
-const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setEditableColumn, cards, setCards, deleteCard }) => {
+const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setEditableColumn, cards, setCards }) => {
     const [active, setActive] = useState(false)
     const [columnCards, setColumnCards] = useState([])
     const [isHovering, setIsHovering] = useState(false)
-    console.log("CAAARDS:", cards.filter((card) => card.columnID === Column.id))
-
 
     const getIndicators = () => {
         return Array.from(document.querySelectorAll(`[data-column="${column.id}"]`));
@@ -73,7 +70,6 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
     }
 
     const handleDrop = (e) => {
-
         setActive(false)
         clearHighlights()
 
@@ -98,24 +94,83 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
             if (!cardToTransfer) {
                 return
             }
-            //cardToTransfer = { ...cardToTransfer, columnID }
-            copy = copy.filter((c) => c.id !== cardID)
+            //copy = copy.filter((c) => c.id !== cardID)
 
-            const moveToBack = before === -1
+
+            const oldColumnID = cardToTransfer.column_id
+            const newColumnID = column.id
+            // cardToTransfer.column_id = newColumnID
+
+            /*
             if (moveToBack) {
-                cardToTransfer.column_id = column.id
+                //cardToTransfer.column_id = column.id
                 copy.push(cardToTransfer)
-            }
-            else {
+            } else {
                 const insertAtIndex = copy.findIndex((el) => el.id === before)
                 if (insertAtIndex === undefined) {
                     return
                 }
-                cardToTransfer.column_id = copy.find((c) => c.id === before).column_id
+                //cardToTransfer.column_id = copy.find((c) => c.id === before).column_id
+                //cardToTransfer.column_id = column.id
                 copy.splice(insertAtIndex, 0, cardToTransfer)
             }
-            setCards(copy)
-            console.log("HANDLE DROP: ", cards)
+             */
+
+            let order = null
+            const moveToBack = before === -1
+            if (moveToBack) {
+                // handle the insertion in the same place
+                if (oldColumnID === newColumnID) {
+                    return
+                }
+                const count = cards.filter(card => card.column_id === newColumnID).length
+                setCards(cards => cards.map(card => {
+                    if (card.id === cardToTransfer.id) {
+                        order = count
+                        return { ...card, order: order, column_id: newColumnID }
+                    }
+                    return card
+                }))
+            } else {
+                const cardBefore = cards.find(card => card.id === before)
+                // handle the insertion in the same place
+                if (oldColumnID === newColumnID &&
+                    (cardToTransfer.order === cardBefore.order - 1 || cardToTransfer.order === cardBefore.order)) {
+                    return
+                }
+                setCards(cards => cards.map(card => {
+                    if (card.id === cardToTransfer.id) {
+                        //console.log("WORK x:", { ...card, order: cardBefore.order, column_id: newColumnID })
+                        order = cardBefore.order
+                        return { ...card, order: order, column_id: newColumnID }
+                    }
+                    if (card.column_id === newColumnID && card.order >= cardBefore.order) {
+                        //console.log("WORK + 1:", { ...card, order: card.order + 1 })
+                        //order = card.order + 1
+                        return { ...card, order: card.order + 1 }
+                    }
+                    if (card.column_id === oldColumnID && card.order >= cardToTransfer.order) {
+                        //console.log("WORK - 1:", { ...card, order: card.order - 1 })
+                        //order = card.order - 1
+                        return { ...card, order: card.order - 1 }
+                    }
+                    return card
+                }))
+            }
+            console.log("HANDLE DROP: ", cards, oldColumnID, newColumnID)
+
+            if (order !== null) {
+                axios.post(`/api/columns/${oldColumnID}/cards/${cardID}/move`,
+                    {"column_id": column.id, "description": cardToTransfer.description, "order": order},
+                    {withCredentials: true})
+                    .then(response => {
+                        console.log("Move card response: ", response)
+                        console.log("[CARD order", order)
+                    })
+                    .catch(error => {
+                        console.log("Error:", error)
+                    })
+            }
         }
     }
 
@@ -172,14 +227,16 @@ const Column = ({ activeBoard, column, columns, setColumns, editableColumn, setE
                 className={`flex-grow w-full overflow-y-scroll transition-colors ${active ? "bg-neutral-800/50" : "bg-neutral-800/0"}`}
             >
                 {
-                    cards.filter((card) => card.column_id === column.id).map((card) =>  {
+                    cards.filter((card) => (card !== undefined && card.column_id === column.id))
+                        .sort((a, b) => a.order - b.order)
+                        .map((card) => {
                         console.log("Rendering Card:", card);
                         return (
                             <Card
-                                key={card.id}
-                                card={card}
-                                handleDragStart={handleDragStart}
-                                deleteCard={deleteCard}
+                                key={ card.id }
+                                card={ card }
+                                setCards={ setCards }
+                                handleDragStart={ handleDragStart }
                             />
                         );
                     })
