@@ -115,5 +115,68 @@ func updateBoard(c *gin.Context) {
 }
 
 func getAllBoardInfo(c *gin.Context) {
+	// Get board ID from URL param
+	strBoardID := c.Param("board_id")
+	i64boardID, err := strconv.ParseInt(strBoardID, 10, 64)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	boardID := uint32(i64boardID)
 
+	// get current user ID
+	anyUserID, exists := c.Get("id")
+	if !exists {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "The token doesn't contain the required claims"})
+		return
+	}
+	// you cannot immediately cast any to uint32
+	userID := uint32(anyUserID.(float64))
+
+	// check whether the board belongs to the user
+	isOwned, err := repositories.IsBoardOwnedByUser(boardID, userID)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !isOwned {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "The board does not belong to the user"})
+		return
+	}
+
+	// get all board columns
+	columns, err := repositories.GetBoardColumns(boardID)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// get all cards from board columns
+	var cards []models.Card
+	for _, column := range columns {
+		columnCards, err := repositories.GetColumnCards(column.ID)
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		cards = append(cards, columnCards...)
+	}
+
+	// make json with board columns
+	jsonBase64Columns, err := json.Marshal(columns)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// make json with cards from board columns
+	jsonBase64Cards, err := json.Marshal(cards)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"columns": string(jsonBase64Columns), "cards": string(jsonBase64Cards)})
 }

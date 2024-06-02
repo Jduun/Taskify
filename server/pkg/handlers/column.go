@@ -58,6 +58,7 @@ func createBoardColumn(c *gin.Context) {
 		Name:    columnInfo.Name,
 		Order:   columnInfo.Order,
 	}
+
 	if err := repositories.NewColumn(column); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

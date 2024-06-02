@@ -30,6 +30,7 @@ func RoutesInit(g *gin.Engine) {
 		authGroup.GET("/columns/:column_id/cards", getColumnCards)
 		authGroup.POST("/columns/:column_id/cards", createColumnCard)
 		authGroup.PATCH("/columns/:column_id/cards/:card_id", updateColumnCard)
+		authGroup.POST("/columns/:column_id/cards/:card_id/move", moveColumnCard)
 		authGroup.DELETE("/columns/:column_id/cards/:card_id", deleteColumnCard)
 
 		authGroup.GET("/boards/:board_id/labels", getBoardLabels)

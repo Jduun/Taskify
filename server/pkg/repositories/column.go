@@ -66,14 +66,12 @@ func IsColumnOwnedByUser(columnID uint32, userID uint32) (bool, error) {
 	err := DB.Pool.QueryRow(context.Background(), `
 		select exists (
 			select 1
-			from "user" u 
-			join board b on u.id = b.user_id
-			join column c on b.id = c.board_id
-			where u.id = $1 and c.id = $2
-		);
-	`,
-		userID,
+			from "column" c
+			join board b on c.board_id = b.id
+			where c.id = $1 and b.user_id = $2
+		);`,
 		columnID,
+		userID,
 	).Scan(&isOwned)
 	return isOwned, err
 }
